@@ -1,0 +1,473 @@
+1..git windows版安装
+
+双击下一步即可，可选安装路径
+
+2.进入Git安装目录
+
+右键 选择 git bash 弹出命令行窗口
+
+或者双击 git-bash.exe执行命令
+
+3.打开 gitee.com 网址
+
+注册 gitee 账号  并绑定了qq邮箱
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+git 相关操作
+
+1.设置git 的用户名 以及邮箱
+git config --global user.name "gyy"
+git config --global user.email "7100165@qq.com"
+
+2.可以不带参数查看相关的设置参数
+git config --global user.name
+git config --global user.email
+
+
+>>创建一个版本库
+1.在打开的git 窗口创建一个目录
+mkdir gyy
+
+2.进入该目录
+cd gyy/
+
+3.初始化该目录变成git 可以管理的目录
+git init
+Initialized empty Git repository in D:/Git/gyy/.git/
+
+可以在D:/Git/gyy/下查看到隐藏目录 .git  该文件不可乱动
+
+4.创建一个txt文本
+vim readme.txt
+prinr("hello world")
+保存退出
+可以在D:/Git/gyy/下看到该文件
+
+5.查看
+cat readme.txt
+prinr("hello world")
+
+6.add 命令添加该文件到仓库   add通常和 commit 结合使用
+git add readme.txt //后面可跟多个文件
+warning: LF will be replaced by CRLF in readme.txt.
+The file will have its original line endings in your working directory
+
+7.commit -m "注释"  该命令提交文件到仓库，-m 可以添加注释
+git commit -m "first commit"
+[master (root-commit) 8bc413a] first commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 readme.txt
+==>
+总结：
+git init 初始化一个仓库目录
+git add 添加文件到仓库
+git commit -m 提交文件到仓库 -m 添加注释
+==>
+
+8.status 查看仓库的当前状态
+git status
+On branch master
+nothing to commit, working tree clean
+
+在windows中打开该readme.txt文件
+添加
+prinr("hello gyy")
+保存
+再查看 会爆红
+git status
+ modified:   readme.txt
+再次将其add 到仓库中
+git add readme.txt
+查看就正常了
+git status
+ modified:   readme.txt
+提交
+git commit -m "add gyy"
+[master 3ee5493] add gyy
+ 1 file changed, 1 insertion(+)
+查看
+git status
+On branch master
+nothing to commit, working tree clean
+
+小结：
+经常使用 git status 来掌握仓库的状态
+
+9.再次在readme文件中添加
+prinr("hello 39")
+
+git diff readme.txt
+出现的绿色是新添加的文件
+再次添加 diff 查看状态
+git add readme.txt
+git diff readme.txt
+git status
+git commit -m "add 39"
+git status
+
+10.log 查看历史记录
+git log
+
+//提交id   commit 8bc413a469cf962bca6e1839f19faf8e907e60b0
+//用户     Author: gyy <7100165@qq.com>
+//提交时间  Date:   Thu Jun 16 17:51:27 2022 +0800
+//注释      first commit
+
+10.1 git log 会显示所有的修改记录 嫌太多可以添加参数减少相关信息
+git log --pretty=oneline
+//只显示 提交的id 和 注释
+248deaf062962a746e91af6a1e3027c9e92715e3 (HEAD -> master) add 39
+3ee5493440564f8a36312b372a82f1b229e2c3c3 add gyy
+8bc413a469cf962bca6e1839f19faf8e907e60b0 first commit
+
+11.git reset --hard 根据提交id (id不需要全部复制，复制一部分即可) 回退到指定的版本
+git reset --hard 3ee5493440
+//可以重新加载文件查看其发生变化
+//再次回退到最后一个版本查看变化
+git reset --hard 248deaf06
+
+12.回退到上一个版本
+git reset --hard HEAD^
+如果回退100个版本呢
+git reset --hard HEAD~100
+
+13.reflog 记录操作过的命令
+git reflog
+
+>>>>>>>>>管理和修改>>>>>>
+
+1.打开readme 文件随意进行修改
+比如添加	prinr("hello cy39")
+
+然后add到暂存区
+git add readme.txt
+
+第2次修改
+再添加 prinr("hello c9")
+
+进行提交
+git commit -m "cy39c9"
+查看状态
+git status
+此时爆红 是因为 commit 是将暂存区中的数据进行提交，第二次的数据并没有add 到暂存区
+
+2.查看工作区和版本库的里面最新版本的区别
+git diff HEAD -- readme.txt
+
+然后再次 add 与commit 一次
+git add readme.txt
+git commit -m "c9"
+git status
+
+>>>>>>>>>撤销修改>>>>>>
+修改readme文件
+添加 
+此时并没有提交，想撤销本次修改
+
+//checkout 丢弃工作区的修改内容
+git checkout -- readme.txt
+然后重新加载 readme 文件可以查看其已撤销
+如果没有撤消 不小心add 到了暂存区
+git add readme.txt
+//查看状态
+git status
+//可以撤销暂存区的修改
+git reset HEAD readme.txt
+//查看状态 此时暂存区的已经撤销掉了 但是工作区的修改还在
+git status
+//再撤销工作区的修改
+git checkout -- readme.txt
+
+>>如果不小心提交到了版本库
+只需进行版本的回退 即可 
+//回退到上一个版本
+git reset --hard HEAD^
+
+
+>>>>>.>>删除文件>>>>>>>
+1.如果不小心删除了工作区的 readme 文件
+但是版本库里有,可以通过 checkout 将其恢复
+git checkout -- readme.txt
+2.如果不小心删除了版本库中的文件
+把工作区的文件重新提交就可以了
+git add readme.txt
+git commit -m "cxtj"
+
+//删除版本库中的文件
+git rm readme.txt
+
+如果版本库与工作区的文件都删除了。。那就都没了
+
+>>>>>>>>远程仓库  github 版 >>>>>>>>>>
+------------------------------------------
+进入C:\Windows\System32\drivers\etc
+找到hosts 末尾添加如下内容
+140.82.112.4 github.com
+199.232.69.194 github.global.ssl.fastly.net
+win+r 打开  cmd 命令
+输入 ipconfig/flushdns
+github.com 就可以正常访问
+-------------------------------------------
+
+1.首先在C盘用户目录下查看有没有隐藏  .ssh目录
+如果没有 在git 窗口执行如下
+ssh-keygen -t rsa -C "7100165@qq.com"
+一路回车-
+
+2.进入.ssh 目录打开 .pub公钥文件
+复制密钥
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+PttsojjuvjsykoV/6T1wJxcNYXcYrB0aWwthoI4fU7TVvTN82J+K3NHS1YM8Nxwas+7ZUrjmuFSpGJnX9KyD8QGtSuwrBJVXdBKqrskqnP8wSrzooDFFaOakogutXJENi34QGTrzhNMFTuSM4wIprFlAJM6hSBu2DRyCkdsASvcL2cI6guoYDx2fVseYninDVDvEACH1/1Z56FUpdsTZQZtRji4Yt4AQdCJcO4zPJ/qkTQt+SaJ2BcB9rB642r98APchmyeKCtbzxbjkfrEUTnoPqbu2/gr6THUtAnniYfJNbUCr/EZdETFRwZuYje7aND7krOmqzkxQEQqBk9USgyITfHKwpxGLYayiSySiSxcjzh5uzRIO+I8zq886/9GwfYQtESEyXqdkMfg1PHOtu04mTBFMYKM6TBhyvd2V5aIBFrGZEHFbn4cuZadc7mDlKn0+LxGASXdqiHstCKWhZfRxIrGSg1pfH22xtNHUn1UemoYeZCQ2LNyPIZCLbIk= 7100165@qq.com
+在github 中设置
+setting
+添加了密钥
+然后 new repository
+gyygit
+其他默认创建
+然后在本地 git 仓库执行
+
+git remote add github https://github.com/githubguoyingyu/gyygit.git
+
+远程库的名字就是origin，这是Git默认的叫法，也可以改成别的，但是origin这个名字一看就知道是远程库。
+
+下一步，就可以把本地库的所有内容推送到远程库上：
+第一次使用
+git push -u github master
+
+输入github用户名密码
+githubguoyingyu
+c*****n
+
+从现在起，只要本地作了提交，就可以通过命令：
+git push github master
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>gitee 设置>>>>>>>>>>>>>
+
+个人头像 点击 设置 
+
+点击安全设置 ssh 公钥 进行添加
+
+个人主页旁边的 + 新建仓库
+添加第一个模板即可创建
+https://gitee.com/guoyingyu/gyygit.git
+然后在本地 git 仓库执行
+git remote add gitee https://gitee.com/guoyingyu/gyygit.git
+
+github的远程库名字是		 github
+githubee远程库的名字就是	 gitee
+
+//查看远程库的连接
+git remote -v
+可以使用此命令将其删除重新连接并设置新的名字
+git remote rm origin
+git remote rm originee
+
+下一步，就可以把本地库的所有内容推送到远程ee的库上：
+第一次使用
+git push -u gitee master
+
+输入gitee用户名密码
+guoyingyu
+c*****n
+
+从现在起，只要本地作了提交，就可以通过命令：
+git push gitee master
+
+如果报错
+可以通过如下命令进行代码合并【注：pull=fetch+merge】
+git pull --rebase gitee master
+
+再执行语句：
+git push gitee master
+
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+分支管理
+
+//1.查看所有的分支
+git branch
+* master  //只有一个master 分支
+//2.创建第一个分支
+git branch dev
+//3.切换到dev 分支
+git checkout dev
+//4.创建并切换 到dev 分支
+git checkout -b dev
+
+//0.在dev 分支下添加readme.txt内容
+工作区添加
+prinr("hello dev")
+//添加到暂存区
+git add readme.txt
+//提交到版本库
+git commit -m "dev"
+//切换到master 分支
+git checkout master
+
+//查看master 下的readme.txt 其中没有hello dev
+//再切换到 dev下 查看
+git checkout dev
+cat readme.txt  其中就有 hello dev
+
+>>>分支合并
+//回到 master 分支
+git checkout master
+//在master 分支下合并 dev分支
+git merge dev
+//分别切换到master 与 dev 分支
+即可查看到 readme.txt 所有的数据都进行了合并
+========================================================
+小结:
+Git鼓励大量使用分支：
+查看分支：git branch
+创建分支：git branch <name>
+切换分支：git checkout <name>
+创建+切换分支：git checkout -b <name>
+合并某分支到当前分支：git merge <name>
+删除分支：git branch -d <name>
+========================================================
+//如果在dev 分支修改了数据并提交
+git checkout dev
+添加：prinr("hello dev2")
+git add readme.txt
+git commit -m "dev2"
+//切换分支
+git checkout master
+添加：prinr("hello master")
+git add readme.txt
+git commit -m "master"
+
+此时两个分支进行合并 必须会冲突。、
+git merge dev
+
+变成了如下的结果:
+<<<<<<< HEAD
+prinr("hello master")
+=======
+prinr("hello dev2")
+>>>>>>> dev
+修改之后 重新提交
+prinr("hello master")
+prinr("hello dev2")
+
+git add readme.txt
+git commit -m "merge"
+这时再查看结果时 master 中就正常
+但是 dev 中没有合并mater 的数据
+
+>>>>>>>>Bug分支>>>>>>>>
+//1.暂停并隐藏当前分支任务
+git stash
+//2.查看隐藏任务
+git stash list
+1.git stash apply 恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除；
+2.git stash pop   恢复的同时把stash内容也删了
+3.git stash apply stash@{0}  恢复指定的 stash
+
+强行删除分支
+git branch -D 分支名字
+
+>>>>>>>多人协作>>>>>>>
+//1.查看远程仓库的信息
+git remote
+origin
+originee
+
+2.查看远程仓库的详细信息
+git remote -v
+origin  https://github.com/githubguoyingyu/gyygit.git (fetch)
+origin  https://github.com/githubguoyingyu/gyygit.git (push)
+originee        https://gitee.com/guoyingyu/gyygit.git (fetch)
+originee        https://gitee.com/guoyingyu/gyygit.git (push)
+
+3.推送指定分支到远程仓库
+
+git push origin master  指定仓库名  指定分支名
+git push originee dev  指定仓库名  指定分支名
+
+注意推送分支
+master 	分支是主分支，因此要时刻与远程同步；
+dev 	分支是开发分支，团队所有成员都需要在上面工作，所以也需要与远程同步；
+bug 	分支只用于在本地修复bug，就没必要推到远程了，除非老板要看看你每周到底修复了几个bug；
+feature 分支是否推到远程，取决于你是否和你的小伙伴合作在上面开发。
+
+>>>>>克隆分支>>>>>>>
+git clone https://gitee.com/guoyingyu/gyygit.git  //克隆的地址
+
+git pull也失败了，原因是没有指定本地dev分支与远程origin/dev分支的链接，
+根据提示，设置dev和origin/dev的链接：
+git branch --set-upstream dev origin/dev
+再 
+git pull
+这回git pull成功，但是合并有冲突，
+需要手动解决，解决的方法和分支管理中的解决冲突完全一样(改成相同的数据)。
+解决后，提交，再push：
+git commit -m "merge & fix hello.py"
+========================================================
+小结
+查看远程库信息，使用git remote -v；
+本地新建的分支如果不推送到远程，对其他人就是不可见的；
+从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交；
+在本地创建和远程分支对应的分支，
+使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致；
+建立本地分支和远程分支的关联，使用git branch --set-upstream branch-name origin/branch-name；
+从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。
+========================================================
+>>>>>>>>>>>标签管理>>>>>>>>>>>>>>>
+切换到需要打标签的分支上：
+//查看分支
+git branch
+//切换分支
+git checkout master
+//打标签为1.0版本
+git tag v1.0
+//查看所有的标签
+git tag
+//忘记打标签
+找到历史提交的commit id，然后打上就可以了：
+git log --pretty=oneline --abbrev-commit
+520ad26 (HEAD -> master, tag: v1.0) merge
+effab12 master
+1127be0 (dev) dev2
+//比如给master
+git tag v0.9 effab12
+//再次查看
+git log --pretty=oneline --abbrev-commit
+520ad26 (HEAD -> master, tag: v1.0) merge
+effab12 (tag: v0.9) master
+1127be0 (dev) dev2
+
+注意，标签不是按时间顺序列出，而是按字母排序的。可以用git show <tagname>查看标签信息：
+git show v0.9
+
+创建带有说明的标签，用-a指定标签名，-m指定说明文字：
+git tag -a v0.1 -m "version 0.1 init" 5e76126
+git log --pretty=oneline --abbrev-commit
+git show v0.1
+==================================详细信息
+小结：
+git tag <name>用于新建一个标签，默认为HEAD，也可以指定一个commit id；
+git tag -a <tagname> -m "blablabla..."可以指定标签信息；
+git tag -s <tagname> -m "blablabla..."可以用PGP签名标签；
+git tag可以查看所有标签。
+===================================
+//标签打错可以删除
+git tag -d v0.9
+//创建的标签存储在本地，不会自动推送到远程
+//手动推送指定标签到远程仓库
+git push origin v1.0
+
+一次性推送全部尚未推送到远程的本地标签：
+git push origin --tags
+
+如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：
+git tag -d v0.9
+然后从远程删除。删除命令也是push，但是格式如下：
+git push origin :refs/tags/v0.9
+
+=======================================================
+小结：
+命令git push origin <tagname>可以推送一个本地标签；
+命令git push origin --tags可以推送全部未推送过的本地标签；
+命令git tag -d <tagname>可以删除一个本地标签；
+命令git push origin :refs/tags/<tagname>可以删除一个远程标签。
+========================================================
